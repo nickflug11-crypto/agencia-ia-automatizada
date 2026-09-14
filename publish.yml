@@ -1,0 +1,40 @@
+name: Publicar artigo automático
+
+on:
+  schedule:
+    - cron: "0 13 * * 1" # toda segunda-feira, 13h UTC (~10h em Brasília)
+  workflow_dispatch: {} # permite rodar manualmente também, pelo botão "Run workflow" no GitHub
+
+permissions:
+  contents: write
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Rodar o time de agentes (planejar, escrever, revisar, publicar)
+        run: npm run run-agents
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      - name: Gerar o site estático
+        run: npm run build-site
+
+      - name: Salvar mudanças no repositório
+        run: |
+          git config user.name "agente-publicador"
+          git config user.email "agente@bot.local"
+          git add .
+          git diff --cached --quiet && echo "Nada novo para publicar" || git commit -m "Novo artigo publicado automaticamente"
+          git push
