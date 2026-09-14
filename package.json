@@ -1,0 +1,17 @@
+{
+  "name": "agencia-ia-automatizada",
+  "version": "1.0.0",
+  "description": "Time de agentes de IA que escreve, revisa e publica conteúdo automaticamente para vender um produto digital.",
+  "main": "agents/orchestrator.js",
+  "scripts": {
+    "run-agents": "node agents/orchestrator.js",
+    "build-site": "node scripts/build-site.js",
+    "publish": "npm run run-agents && npm run build-site"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.0",
+    "gray-matter": "^4.0.3",
+    "marked": "^14.1.2",
+    "dotenv": "^16.4.5"
+  }
+}
